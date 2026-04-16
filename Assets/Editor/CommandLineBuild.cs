@@ -96,6 +96,60 @@ namespace FinalNumber.Editor
         }
 
         /// <summary>
+        /// Build WebGL for browser testing from command line.
+        /// Usage: unity -quit -batchmode -executeMethod FinalNumber.Editor.CommandLineBuild.BuildWebGL -version 1.0.0 -buildNumber 42 -buildType Development
+        /// </summary>
+        public static void BuildWebGL()
+        {
+            try
+            {
+                var args = ParseCommandLineArgs();
+                
+                Debug.Log($"[CommandLineBuild] Starting WebGL build...");
+                Debug.Log($"[CommandLineBuild] Version: {args.version}, Build: {args.buildNumber}, Type: {args.buildType}");
+
+                // Apply build configuration
+                ApplyBuildConfig(BuildTarget.WebGL, args);
+
+                // Setup WebGL-specific settings
+                PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
+                PlayerSettings.WebGL.nameFilesAsHashes = true;
+                PlayerSettings.WebGL.dataCaching = true;
+                PlayerSettings.WebGL.exceptionSupport = args.buildType == "Development" 
+                    ? WebGLExceptionSupport.FullWithStacktrace 
+                    : WebGLExceptionSupport.None;
+
+                // Build path
+                string buildDir = Path.Combine(OUTPUT_DIR, "WebGL");
+                Directory.CreateDirectory(buildDir);
+
+                BuildReport report = BuildPipeline.BuildPlayer(
+                    GetEnabledScenes(),
+                    buildDir,
+                    BuildTarget.WebGL,
+                    args.buildType == "Development" ? BuildOptions.Development : BuildOptions.None
+                );
+
+                if (report.summary.result != BuildResult.Succeeded)
+                {
+                    Debug.LogError($"[CommandLineBuild] WebGL build failed!");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+
+                Debug.Log($"[CommandLineBuild] WebGL build succeeded: {buildDir}");
+                Debug.Log($"[CommandLineBuild] Open {buildDir}/index.html in a browser to test.");
+                
+                EditorApplication.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[CommandLineBuild] Build failed with exception: {ex}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>
         /// Build iOS Xcode project from command line.
         /// Usage: unity -quit -batchmode -executeMethod FinalNumber.Editor.CommandLineBuild.BuildiOS -version 1.0.0 -buildNumber 42 -buildType Release
         /// </summary>
@@ -221,6 +275,14 @@ namespace FinalNumber.Editor
                 case BuildTarget.iOS:
                     PlayerSettings.bundleVersion = args.version;
                     PlayerSettings.iOS.buildNumber = args.buildNumber;
+                    
+                    PlayerSettings.productName = args.buildType == "Release" 
+                        ? "Final Number" 
+                        : $"Final Number [{args.buildType}]";
+                    break;
+
+                case BuildTarget.WebGL:
+                    PlayerSettings.bundleVersion = args.version;
                     
                     PlayerSettings.productName = args.buildType == "Release" 
                         ? "Final Number" 
