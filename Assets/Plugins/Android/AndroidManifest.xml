@@ -36,8 +36,8 @@
             <meta-data android:name="android.notch_support" android:value="true" />
         </activity>
 
-        <!-- Privacy Policy Metadata for Play Store -->
-        <meta-data android:name="privacy_policy_url" android:value="https://finalnumber.example.com/privacy" />
+        <!-- Privacy Policy Metadata for Play Store - UPDATE BEFORE SUBMISSION -->
+        <meta-data android:name="privacy_policy_url" android:value="https://finalnumber.studio/privacy" />
 
         <!-- AdMob Configuration (when enabled) -->
         <meta-data

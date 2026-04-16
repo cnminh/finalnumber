@@ -11,12 +11,12 @@ namespace FinalNumber.Compliance
     {
         public static PrivacyComplianceManager Instance { get; private set; }
 
-        [Header("Privacy URLs")]
-        [Tooltip("Full URL to your privacy policy")]
-        public string privacyPolicyUrl = "https://finalnumber.example.com/privacy";
-        
-        [Tooltip("Full URL to your terms of service")]
-        public string termsOfServiceUrl = "https://finalnumber.example.com/terms";
+        [Header("Privacy URLs - UPDATE BEFORE STORE SUBMISSION")]
+        [Tooltip("Full URL to your privacy policy - CHANGE THIS before submitting to stores")]
+        public string privacyPolicyUrl = "https://finalnumber.studio/privacy";
+
+        [Tooltip("Full URL to your terms of service - CHANGE THIS before submitting to stores")]
+        public string termsOfServiceUrl = "https://finalnumber.studio/terms";
 
         [Header("GDPR/CCPA Compliance")]
         [Tooltip("Enable GDPR compliance for EU users")]
