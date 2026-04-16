@@ -29,7 +29,7 @@ on:
 
 env:
   UNITY_VERSION: 2022.3.20f1
-  PROJECT_PATH: FinalNumber
+  PROJECT_PATH: .
 
 jobs:
   # ============================================================================
@@ -55,8 +55,8 @@ jobs:
       - name: Cache Library
         uses: actions/cache@v4
         with:
-          path: ${{ env.PROJECT_PATH }}/Library
-          key: Library-Android-${{ hashFiles('${{ env.PROJECT_PATH }}/Assets/**', '${{ env.PROJECT_PATH }}/Packages/**', '${{ env.PROJECT_PATH }}/ProjectSettings/**') }}
+          path: Library
+          key: Library-Android-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-Android-
 
@@ -141,8 +141,8 @@ jobs:
       - name: Cache Library
         uses: actions/cache@v4
         with:
-          path: ${{ env.PROJECT_PATH }}/Library
-          key: Library-iOS-${{ hashFiles('${{ env.PROJECT_PATH }}/Assets/**', '${{ env.PROJECT_PATH }}/Packages/**', '${{ env.PROJECT_PATH }}/ProjectSettings/**') }}
+          path: Library
+          key: Library-iOS-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-iOS-
 
