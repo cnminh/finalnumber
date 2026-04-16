@@ -1,0 +1,172 @@
+name: Version Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionType:
+        description: 'Version Type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      buildConfigOnly:
+        description: 'Update BuildConfig only (skip git tag)'
+        type: boolean
+        default: false
+
+jobs:
+  bump-version:
+    name: Bump Version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Current Version
+        id: current
+        run: |
+          # Get latest tag
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          CURRENT_VERSION=${LATEST_TAG#v}
+          
+          echo "current=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $CURRENT_VERSION"
+
+      - name: Calculate New Version
+        id: new
+        run: |
+          VERSION="${{ steps.current.outputs.current }}"
+          BUMP_TYPE="${{ github.event.inputs.versionType }}"
+          
+          # Parse current version
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          MAJOR=${MAJOR:-0}
+          MINOR=${MINOR:-0}
+          PATCH=${PATCH:-0}
+          
+          # Bump version
+          case $BUMP_TYPE in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+          
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "new=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION"
+
+      - name: Update BuildConfig (if exists)
+        run: |
+          BUILD_CONFIG_PATH="FinalNumber/Assets/BuildConfig.asset"
+          
+          if [ -f "$BUILD_CONFIG_PATH" ]; then
+            echo "Updating BuildConfig.asset..."
+            
+            # Note: This is a simplified approach. In production, you'd use
+            # Unity's YAML parsing or a Unity Editor script to properly update
+            # the ScriptableObject. For now, we document the need for manual update.
+            
+            echo "⚠️ Please manually update BuildConfig.asset in Unity:"
+            echo "   - Major: Set to match new version"
+            echo "   - Minor: Set to match new version"  
+            echo "   - Patch: Set to match new version"
+            echo "   - Reset buildNumber to 1"
+          else
+            echo "ℹ️ No BuildConfig.asset found. It will be created manually in Unity."
+          fi
+
+      - name: Create Git Tag
+        if: ${{ !github.event.inputs.buildConfigOnly }}
+        run: |
+          NEW_VERSION="${{ steps.new.outputs.new }}"
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create annotated tag
+          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION
+          
+          Version bump: ${{ github.event.inputs.versionType }}
+          Previous: v${{ steps.current.outputs.current }}
+          
+          Triggered by: @${{ github.actor }}"
+          
+          # Push tag
+          git push origin "v$NEW_VERSION"
+          
+          echo "Created tag v$NEW_VERSION"
+
+      - name: Create Summary Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ steps.new.outputs.new }}';
+            const oldVersion = '${{ steps.current.outputs.current }}';
+            const bumpType = '${{ github.event.inputs.versionType }}';
+            const tagCreated = ${{ !github.event.inputs.buildConfigOnly }};
+            
+            const body = `## Version Bumped
+            
+            | | |
+            |---|---|
+            | Previous | v${oldVersion} |
+            | New | **v${version}** |
+            | Type | ${bumpType} |
+            | Tag Created | ${tagCreated ? '✅ Yes' : '❌ No (config-only)'} |
+            
+            ${tagCreated 
+              ? `🚀 [Trigger build workflow](https://github.com/${{ github.repository }}/actions/workflows/build.yml)` 
+              : 'Update BuildConfig.asset manually in Unity, then create tag.'}
+            `;
+            
+            // Find the triggering workflow run and comment
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'version-bump.yml',
+              per_page: 1
+            });
+            
+            if (runs.data.workflow_runs.length > 0) {
+              await github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'build.yml',
+                ref: `refs/tags/v${version}`
+              }).catch(() => {
+                console.log('Build workflow trigger skipped (may start automatically on tag)');
+              });
+            }
+            
+            // Comment on any related PRs
+            const prs = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
+            
+            if (prs.data.length > 0) {
+              await github.rest.issues.createComment({
+                issue_number: prs.data[0].number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }

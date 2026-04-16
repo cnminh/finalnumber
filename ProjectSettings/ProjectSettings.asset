@@ -1,0 +1,246 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!129 &1
+PlayerSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 23
+  productGUID: 5d34c2c2d4c2c2d4c2d4c2d4c2d4c2d4
+  AndroidProfiler: 0
+  AndroidFilterTouchesWhenObscured: 0
+  AndroidEnableSustainedPerformanceMode: 0
+  defaultScreenOrientation: 0
+  targetDevice: 2
+  useOnDemandResources: 0
+  accelerometerFrequency: 60
+  companyName: Final Number Studios
+  productName: Final Number
+  defaultCursor: {instanceID: 0}
+  cursorHotspot: {x: 0, y: 0}
+  m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
+  m_ShowUnitySplashScreen: 1
+  m_ShowUnitySplashLogo: 1
+  m_SplashScreenOverlayOpacity: 1
+  m_SplashScreenAnimation: 1
+  m_SplashScreenLogoStyle: 1
+  m_SplashScreenDrawMode: 0
+  m_SplashScreenBackgroundAnimationZoom: 1
+  m_SplashScreenLogoAnimationZoom: 1
+  m_SplashScreenBackgroundLandscapeAspect: 1
+  m_SplashScreenBackgroundPortraitAspect: 1
+  m_SplashScreenBackgroundLandscapeUvs:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  m_SplashScreenBackgroundPortraitUvs:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  m_SplashScreenLogos: []
+  m_VirtualRealitySplashScreen: {instanceID: 0}
+  m_HolographicTrackingLossScreen: {instanceID: 0}
+  defaultScreenWidth: 1024
+  defaultScreenHeight: 768
+  defaultScreenWidthWeb: 960
+  defaultScreenHeightWeb: 600
+  m_StereoRenderingPath: 0
+  m_ActiveColorSpace: 0
+  m_MTRendering: 1
+  mipStripping: 0
+  numberOfMipsStripping: 0
+  m_StackTraceTypes: 010000000100000001000000010000000100000001000000
+  iosShowActivityIndicatorOnLoading: 0
+  androidShowActivityIndicatorOnLoading: 0
+  iosUseCustomAppBackgroundBehavior: 0
+  iosAllowHTTPDownload: 1
+  allowedAutorotateToPortrait: 1
+  allowedAutorotateToPortraitUpsideDown: 0
+  allowedAutorotateToLandscapeRight: 0
+  allowedAutorotateToLandscapeLeft: 0
+  useOSAutorotation: 1
+  use32BitDisplayBuffer: 1
+  preserveFramebufferAlpha: 0
+  disableDepthAndStencilBuffers: 0
+  androidStartInFullscreen: 1
+  androidRenderOutsideSafeArea: 1
+  androidUseSwappy: 1
+  androidBlitType: 0
+  androidResizableWindow: 0
+  androidDefaultWindowWidth: 1920
+  androidDefaultWindowHeight: 1080
+  androidMinimumWindowWidth: 400
+  androidMinimumWindowHeight: 300
+  androidFullscreenMode: 1
+  defaultIsNativeResolution: 1
+  macRetinaSupport: 1
+  runInBackground: 0
+  captureSingleScreen: 0
+  muteOtherAudioSources: 0
+  Prepare IOS For Recording: 0
+  Force IOS Speakers When Recording: 0
+  deferSystemGesturesMode: 0
+  hideHomeButton: 0
+  submitAnalytics: 1
+  usePlayerLog: 1
+  bakeCollisionMeshes: 0
+  forceSingleInstance: 0
+  useFlipModelSwapchain: 1
+  useHDRDisplay: 0
+  D3DHDRBitDepth: 0
+  m_ColorGamuts: 00000000
+  targetPixelDensity: 0
+  resolutionScalingMode: 0
+  androidSupportedAspectRatio: 1
+  androidMaxAspectRatio: 2.1
+  applicationIdentifier:
+    Android: com.finalnumber.game
+    iPhone: com.finalnumber.game
+    Standalone: com.finalnumber.game
+  buildNumber:
+    Android: 0
+    iPhone: 0
+    tvOS: 0
+  preloadedAssets: []
+  metroInputSource: 0
+  wsaTransparentSwapchain: 0
+  m_HolographicPauseOnTrackingLoss: 1
+  xboxOneDisableKinectGpuReservation: 1
+  xboxOneEnable7thCore: 1
+  vrSettings:
+    cardboard:
+      depthFormat: 0
+      enableTransitionView: 0
+    daydream:
+      depthFormat: 0
+      useHeadless: 0
+    enable360StereoCapture: 0
+    oculus:
+      sharedDepthBuffer: 1
+      dashSupport: 1
+      lowOverheadMode: 0
+      protectedContext: 0
+      v2Signing: 1
+    hololens:
+      depthFormat: 1
+      depthBufferSharingEnabled: 1
+    lumin:
+      depthFormat: 0
+      videoCapture: 0
+  androidEnableTango: 0
+  androidManifestType: 1
+  androidUseFixedKeystore: 0
+  androidAPKExpansionType: 0
+  androidPrefabAbsolutePath: 
+  androidKeystoreName: 
+  androidKeyaliasName: 
+  AndroidBuildArchitecture: 2
+  AndroidMinSdkVersion: 24
+  AndroidTargetSdkVersion: 34
+  AndroidPreferredInstallLocation: 1
+  aotOptions: 
+  stripEngineCode: 1
+  iPhoneStrippingLevel: 0
+  iPhoneScriptCallOptimization: 0
+  ForceInternetPermission: 0
+  ForceSDCardPermission: 0
+  CreateWallpaper: 0
+  APKVerificationTimeout: 30
+  AndroidBCPermission: 0
+  AndroidKeychainSharing: 0
+  UseSWCommandBuffers: 0
+  PlatformApiCompatibilityLevel: 
+  iPhoneSdkVersion: 988
+  iPhoneTargetOSVersionString: 12.0
+  appleDeveloperTeamID: 
+  iPhoneBuildNumber: 1
+  AndroidEnableArmv9SecurityFeatures: 0
+  AndroidTargetArchitectures: 5
+  androidSplashScreen: {instanceID: 0}
+  AndroidKeystoreName: 
+  AndroidKeyaliasName: 
+  AndroidEnableArmv9SecurityFeatures: 0
+  AndroidTargetArchitectures: 5
+  AndroidBuildApkPerCpuArchitecture: 0
+  AndroidTVCompatibility: 1
+  AndroidIsGame: 1
+  AndroidEnableTango: 0
+  androidEnableBanner: 1
+  androidUseLowAccuracyLocation: 0
+  androidUse16BitHDR: 0
+  m_TargetShaderGraphics: 
+  m_Automatic: 1
+  m_FallbackShader: 
+  m_ShaderPrecision: 0
+  m_RenderingPath: 1
+  m_MobileRenderingPath: 1
+  metroPackageName: FinalNumber
+  metroPackageVersion: 1.0.0.0
+  metroCertificatePath: 
+  metroCertificatePassword: 
+  metroCertificateSubject: 
+  metroCertificateIssuer: 
+  metroCertificateNotAfter: 0000000000000000
+  metroApplicationDescription: Final Number
+  wsaImages: {}
+  metroTileShortName: 
+  metroTileShowName: 0
+  metroMediumTileShowName: 0
+  metroLargeTileShowName: 0
+  metroWideTileShowName: 0
+  metroDefaultTileSize: 0
+  metroTileForegroundText: 1
+  metroTileBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
+  metroSplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
+  wsaTransparentSwapchain: 0
+  wsaHolographicPauseOnTrackingLoss: 1
+  wsaD3D11DebugMode: 0
+  wsaD3D11EmulatedMotionControllers: 0
+  wsaStreamerDebugMode: 0
+  wsaEnableStereoscopicRendering: 0
+  xboxOneProductId: 
+  xboxOneUpdateKey: 
+  xboxOneSandboxId: 
+  xboxOneContentId: 
+  xboxOneTitleId: 
+  xboxOneSCPD: 
+  xboxOneEnable7thCore: 1
+  xboxOneDisableKinectGpuReservation: 1
+  xboxOneEnableVariableGPU: 0
+  xboxOnePresentImmediateThreshold: 0
+  switchFloatEnvironmentBuffer: 0
+  switchScreenResolutionWidth: 1920
+  switchScreenResolutionHeight: 1080
+  switchCPUPerformanceMode: 0
+  switchGPUPerformanceMode: 0
+  switchASTCDecoding: 0
+  switchNVNSDShader: 0
+  switchNVNGraphicsFirmware: 0
+  switchNVNGraphicsFirmwareShader: 0
+  switchMaxWorkerMultiple: 8
+  stadiaPresentMode: 0
+  stadiaTargetFramerate: 0
+  scriptingBackend: {}
+  il2cppCompilerConfiguration: {}
+  managedStrippingLevel: {}
+  incrementalIl2cppBuild: {}
+  allowUnsafeCode: 0
+  useDeterministicCompilation: 1
+  enableRoslynAnalyzers: 1
+  selectedPlatform: 0
+  additionalIl2CppArgs: 
+  scriptingRuntimeVersion: 1
+  gcWBarrierValidation: 0
+  gcIncremental: 1
+  assemblyVersionValidation: 1
+  gcMaxTimeSpent: 3
+  gcHeapExpansion: 64
+  gcMaxIdleTime: 0
+  apiCompatibilityLevel: 6
+  apiCompatibilityLevelPerPlatform: {}
+  m_RenderingPath: 1
+  m_MobileRenderingPath: 1
+  metroPackageName: FinalNumber
+  metroPackageVersion: 1.0.0.0

@@ -1,0 +1,175 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'FinalNumber/**'
+
+env:
+  UNITY_VERSION: 2022.3.20f1
+  PROJECT_PATH: FinalNumber
+
+jobs:
+  # ============================================================================
+  # Unity Build Validation
+  # ============================================================================
+  build-validation:
+    name: Build Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PROJECT_PATH }}/Library
+          key: Library-Validation-${{ hashFiles('${{ env.PROJECT_PATH }}/Assets/**', '${{ env.PROJECT_PATH }}/Packages/**', '${{ env.PROJECT_PATH }}/ProjectSettings/**') }}
+          restore-keys: |
+            Library-Validation-
+
+      # Validate project can build (Linux standalone is fastest)
+      - name: Build Validation
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneLinux64
+          projectPath: ${{ env.PROJECT_PATH }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+          buildName: validation-build
+          allowDirtyBuild: true
+          versioning: None
+
+  # ============================================================================
+  # Code Quality Checks
+  # ============================================================================
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check C# File Formatting
+        run: |
+          # Find all C# files and check for basic formatting issues
+          echo "Checking C# file formatting..."
+          
+          # Check for tabs (should use spaces)
+          TAB_FILES=$(find ${{ env.PROJECT_PATH }}/Assets -name "*.cs" -exec grep -l $'\t' {} \; 2>/dev/null || true)
+          if [ -n "$TAB_FILES" ]; then
+            echo "⚠️ Warning: Some C# files contain tabs instead of spaces:"
+            echo "$TAB_FILES"
+          fi
+          
+          # Check for files with BOM
+          BOM_FILES=$(find ${{ env.PROJECT_PATH }}/Assets -name "*.cs" -exec file {} \; 2>/dev/null | grep "UTF-8 Unicode (with BOM)" | cut -d: -f1 || true)
+          if [ -n "$BOM_FILES" ]; then
+            echo "⚠️ Warning: Some C# files have UTF-8 BOM:"
+            echo "$BOM_FILES"
+          fi
+          
+          echo "✅ Code quality check complete"
+
+  # ============================================================================
+  # Asset Validation
+  # ============================================================================
+  asset-validation:
+    name: Asset Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Validate Asset Structure
+        run: |
+          echo "Validating project structure..."
+          
+          # Check required folders exist
+          REQUIRED_DIRS=(
+            "${{ env.PROJECT_PATH }}/Assets/Scripts"
+            "${{ env.PROJECT_PATH }}/Assets/Resources"
+            "${{ env.PROJECT_PATH }}/ProjectSettings"
+          )
+          
+          for dir in "${REQUIRED_DIRS[@]}"; do
+            if [ ! -d "$dir" ]; then
+              echo "❌ Required directory missing: $dir"
+              exit 1
+            fi
+          done
+          
+          # Check for common issues
+          
+          # Large files (>100MB - GitHub limit)
+          echo "Checking for files >100MB..."
+          LARGE_FILES=$(find ${{ env.PROJECT_PATH }} -type f -size +100M 2>/dev/null || true)
+          if [ -n "$LARGE_FILES" ]; then
+            echo "❌ Files over 100MB found (exceeds GitHub limit):"
+            echo "$LARGE_FILES"
+            exit 1
+          fi
+          
+          # Check for missing meta files
+          echo "Checking for missing .meta files..."
+          MISSING_META=$(find ${{ env.PROJECT_PATH }}/Assets -type f ! -name "*.meta" ! -path "*/.*" | while read file; do
+            if [ ! -f "$file.meta" ]; then
+              echo "$file"
+            fi
+          done)
+          
+          if [ -n "$MISSING_META" ]; then
+            echo "⚠️ Files without .meta files:"
+            echo "$MISSING_META"
+          fi
+          
+          echo "✅ Asset validation complete"
+
+  # ============================================================================
+  # Summary Comment
+  # ============================================================================
+  summary:
+    name: PR Summary
+    needs: [build-validation, code-quality, asset-validation]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const buildStatus = '${{ needs.build-validation.result }}';
+            const qualityStatus = '${{ needs.code-quality.result }}';
+            const assetStatus = '${{ needs.asset-validation.result }}';
+            
+            const statusEmoji = (status) => {
+              if (status === 'success') return '✅';
+              if (status === 'failure') return '❌';
+              return '⚠️';
+            };
+            
+            const body = `## PR Validation Results
+            
+            | Check | Status |
+            |-------|--------|
+            | ${statusEmoji(buildStatus)} Build Validation | ${buildStatus} |
+            | ${statusEmoji(qualityStatus)} Code Quality | ${qualityStatus} |
+            | ${statusEmoji(assetStatus)} Asset Validation | ${assetStatus} |
+            
+            ${buildStatus === 'failure' || qualityStatus === 'failure' || assetStatus === 'failure' 
+              ? '❌ **Please fix the failed checks before merging.**' 
+              : '✅ **All checks passed! Ready to merge.**'}
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });

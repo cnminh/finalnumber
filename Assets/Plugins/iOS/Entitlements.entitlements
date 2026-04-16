@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Required entitlements for Unity games -->
+    
+    <!-- App Sandbox - Required for App Store -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+    
+    <!-- Network Access -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    
+    <!-- Allow outgoing network connections (for analytics, ads, etc.) -->
+    <key>com.apple.security.network.server</key>
+    <false/>
+    
+    <!-- Device resources -->
+    <key>com.apple.security.device.battery</key>
+    <true/>
+    
+    <!-- File access - Documents folder for save data -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+    
+    <!-- iCloud key-value storage (if needed for save game sync) -->
+    <!-- <key>com.apple.security.application-groups</key> -->
+    <!-- <array><string>group.com.finalnumber.game</string></array> -->
+    
+    <!-- App Group (for sharing data between app and extensions) -->
+    <!-- Enable if using widgets or other extensions -->
+    <!-- <key>com.apple.security.application-groups</key> -->
+    <!-- <array><string>group.com.finalnumber.game</string></array> -->
+</dict>
+</plist>
