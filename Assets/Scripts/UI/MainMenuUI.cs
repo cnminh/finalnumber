@@ -49,6 +49,12 @@ namespace FinalNumber.UI
 
         private bool isGameStarting = false;
 
+        private void Awake()
+        {
+            // Ensure UI is created early, before Start()
+            EnsureUIExists();
+        }
+
         private void Start()
         {
             InitializeUI();
@@ -63,6 +69,12 @@ namespace FinalNumber.UI
 
         private void InitializeUI()
         {
+            // Log UI configuration for debugging
+            Debug.Log($"[MainMenuUI] InitializeUI - Canvas: {(mainMenuCanvas != null ? "OK" : "MISSING")}, " +
+                      $"StartButton: {(startGameButton != null ? "OK" : "MISSING")}, " +
+                      $"SettingsButton: {(settingsButton != null ? "OK" : "MISSING")}, " +
+                      $"QuitButton: {(quitButton != null ? "OK" : "MISSING")}");
+
             // Ensure we have an EventSystem for UI input handling
             EnsureEventSystemExists();
 
@@ -71,12 +83,22 @@ namespace FinalNumber.UI
             {
                 startGameButton.onClick.RemoveAllListeners();
                 startGameButton.onClick.AddListener(OnStartGameClicked);
+                Debug.Log("[MainMenuUI] Start Game button listener attached.");
+            }
+            else
+            {
+                Debug.LogError("[MainMenuUI] Start Game button is null! Button clicks will not work.");
             }
 
             if (settingsButton != null)
             {
                 settingsButton.onClick.RemoveAllListeners();
                 settingsButton.onClick.AddListener(OnSettingsClicked);
+                Debug.Log("[MainMenuUI] Settings button listener attached.");
+            }
+            else
+            {
+                Debug.LogWarning("[MainMenuUI] Settings button is null.");
             }
 
             if (quitButton != null)
@@ -87,6 +109,7 @@ namespace FinalNumber.UI
                 // Hide quit button on mobile/web platforms
                 quitButton.gameObject.SetActive(false);
 #endif
+                Debug.Log("[MainMenuUI] Quit button listener attached.");
             }
 
             // Set default text if not configured
@@ -112,6 +135,10 @@ namespace FinalNumber.UI
                 mainMenuCanvas.enabled = true;
                 mainMenuCanvas.gameObject.SetActive(true);
             }
+            else
+            {
+                Debug.LogError("[MainMenuUI] Main menu canvas is null! UI will not be visible.");
+            }
         }
 
         private void EnsureEventSystemExists()
@@ -134,6 +161,149 @@ namespace FinalNumber.UI
                 eventSystem.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
 #endif
             }
+        }
+
+        /// <summary>
+        /// Creates the entire UI hierarchy at runtime if it doesn't exist.
+        /// This ensures the game is playable even if scene setup is incomplete.
+        /// </summary>
+        private void EnsureUIExists()
+        {
+            // If we already have a canvas assigned, skip runtime creation
+            if (mainMenuCanvas != null)
+            {
+                Debug.Log("[MainMenuUI] Using existing canvas from inspector.");
+                return;
+            }
+
+            Debug.Log("[MainMenuUI] No canvas assigned - creating UI at runtime.");
+
+            // Create the main canvas
+            GameObject canvasGO = new GameObject("MainMenuCanvas");
+            mainMenuCanvas = canvasGO.AddComponent<Canvas>();
+            mainMenuCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            mainMenuCanvas.sortingOrder = 0;
+
+            // Add CanvasScaler for responsive UI
+            CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
+
+            // Add GraphicRaycaster for click detection
+            canvasGO.AddComponent<GraphicRaycaster>();
+
+            // Make this a child of this GameObject for organization
+            canvasGO.transform.SetParent(transform, false);
+
+            // Create the menu panel as a child of canvas
+            GameObject panelGO = new GameObject("MenuPanel");
+            panelGO.transform.SetParent(canvasGO.transform, false);
+            menuPanel = panelGO;
+
+            // Add and configure RectTransform to fill screen
+            RectTransform panelRect = panelGO.AddComponent<RectTransform>();
+            panelRect.anchorMin = Vector2.zero;
+            panelRect.anchorMax = Vector2.one;
+            panelRect.offsetMin = new Vector2(50, 50);
+            panelRect.offsetMax = new Vector2(-50, -50);
+
+            // Add an Image component for background
+            Image panelImage = panelGO.AddComponent<Image>();
+            panelImage.color = new Color(0.1f, 0.12f, 0.15f, 0.95f);
+
+            // Create the title text
+            titleText = CreateTextElement("TitleText", panelGO.transform, "Final Number", 64,
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -80));
+
+            // Create the subtitle text
+            subtitleText = CreateTextElement("SubtitleText", panelGO.transform, "A Number Puzzle Game", 32,
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -160));
+
+            // Create Start Game button
+            startGameButton = CreateButton("StartGameButton", panelGO.transform, "PLAY",
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 40),
+                new Vector2(300, 80));
+
+            // Create Settings button
+            settingsButton = CreateButton("SettingsButton", panelGO.transform, "SETTINGS",
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, -60),
+                new Vector2(300, 80));
+
+            // Create Quit button (hidden on mobile)
+            quitButton = CreateButton("QuitButton", panelGO.transform, "QUIT",
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, -160),
+                new Vector2(300, 80));
+
+#if UNITY_ANDROID || UNITY_IOS || UNITY_WEBGL
+            quitButton.gameObject.SetActive(false);
+#endif
+
+            // Ensure EventSystem exists
+            EnsureEventSystemExists();
+
+            Debug.Log("[MainMenuUI] Runtime UI creation complete.");
+        }
+
+        /// <summary>
+        /// Helper to create a TextMeshPro text element.
+        /// </summary>
+        private TextMeshProUGUI CreateTextElement(string name, Transform parent, string text, int fontSize,
+            Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition)
+        {
+            GameObject textGO = new GameObject(name);
+            textGO.transform.SetParent(parent, false);
+
+            TextMeshProUGUI tmp = textGO.AddComponent<TextMeshProUGUI>();
+            tmp.text = text;
+            tmp.fontSize = fontSize;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.color = Color.white;
+
+            RectTransform rect = textGO.GetComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.anchoredPosition = anchoredPosition;
+            rect.sizeDelta = new Vector2(600, 100);
+
+            return tmp;
+        }
+
+        /// <summary>
+        /// Helper to create a Button with text.
+        /// </summary>
+        private Button CreateButton(string name, Transform parent, string buttonText,
+            Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 size)
+        {
+            // Create button GameObject
+            GameObject buttonGO = new GameObject(name);
+            buttonGO.transform.SetParent(parent, false);
+
+            // Add RectTransform
+            RectTransform rect = buttonGO.AddComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.anchoredPosition = anchoredPosition;
+            rect.sizeDelta = size;
+
+            // Add Image component for button background
+            Image image = buttonGO.AddComponent<Image>();
+            image.color = new Color(0.2f, 0.5f, 0.9f, 1f); // Nice blue color
+
+            // Add Button component
+            Button button = buttonGO.AddComponent<Button>();
+            button.targetGraphic = image;
+
+            // Create text child for the button
+            TextMeshProUGUI text = CreateTextElement(name + "Text", buttonGO.transform, buttonText, 28,
+                Vector2.zero, Vector2.one, Vector2.zero);
+            text.rectTransform.anchorMin = Vector2.zero;
+            text.rectTransform.anchorMax = Vector2.one;
+            text.rectTransform.offsetMin = Vector2.zero;
+            text.rectTransform.offsetMax = Vector2.zero;
+
+            return button;
         }
 
         private void SubscribeToEvents()
