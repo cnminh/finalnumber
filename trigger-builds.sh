@@ -4,7 +4,7 @@
 
 set -e
 
-REPO="finalnumber/finalnumber"
+REPO="cnminh/finalnumber"
 WORKFLOW="build.yml"
 
 echo "=== Final Number Build Trigger ==="
