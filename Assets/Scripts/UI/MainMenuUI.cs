@@ -180,6 +180,7 @@ namespace FinalNumber.UI
 
             // Create the main canvas
             GameObject canvasGO = new GameObject("MainMenuCanvas");
+            canvasGO.layer = 5; // UI layer
             mainMenuCanvas = canvasGO.AddComponent<Canvas>();
             mainMenuCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             mainMenuCanvas.sortingOrder = 0;
@@ -191,14 +192,16 @@ namespace FinalNumber.UI
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
 
-            // Add GraphicRaycaster for click detection
-            canvasGO.AddComponent<GraphicRaycaster>();
+            // Add GraphicRaycaster for click detection with proper settings
+            GraphicRaycaster raycaster = canvasGO.AddComponent<GraphicRaycaster>();
+            raycaster.blockingObjects = GraphicRaycaster.BlockingObjects.None;
 
             // Make this a child of this GameObject for organization
             canvasGO.transform.SetParent(transform, false);
 
             // Create the menu panel as a child of canvas
             GameObject panelGO = new GameObject("MenuPanel");
+            panelGO.layer = 5; // UI layer
             panelGO.transform.SetParent(canvasGO.transform, false);
             menuPanel = panelGO;
 
@@ -212,6 +215,7 @@ namespace FinalNumber.UI
             // Add an Image component for background
             Image panelImage = panelGO.AddComponent<Image>();
             panelImage.color = new Color(0.1f, 0.12f, 0.15f, 0.95f);
+            panelImage.raycastTarget = false; // Don't block raycasts - let buttons handle them
 
             // Create the title text
             titleText = CreateTextElement("TitleText", panelGO.transform, "Final Number", 64,
@@ -250,16 +254,18 @@ namespace FinalNumber.UI
         /// Helper to create a TextMeshPro text element.
         /// </summary>
         private TextMeshProUGUI CreateTextElement(string name, Transform parent, string text, int fontSize,
-            Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition)
+            Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, bool enableRaycast = false)
         {
             GameObject textGO = new GameObject(name);
             textGO.transform.SetParent(parent, false);
+            textGO.layer = 5; // UI layer
 
             TextMeshProUGUI tmp = textGO.AddComponent<TextMeshProUGUI>();
             tmp.text = text;
             tmp.fontSize = fontSize;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.color = Color.white;
+            tmp.raycastTarget = enableRaycast; // Default false to prevent blocking clicks
 
             RectTransform rect = textGO.GetComponent<RectTransform>();
             rect.anchorMin = anchorMin;
@@ -279,6 +285,7 @@ namespace FinalNumber.UI
             // Create button GameObject
             GameObject buttonGO = new GameObject(name);
             buttonGO.transform.SetParent(parent, false);
+            buttonGO.layer = 5; // UI layer
 
             // Add RectTransform
             RectTransform rect = buttonGO.AddComponent<RectTransform>();
@@ -290,18 +297,47 @@ namespace FinalNumber.UI
             // Add Image component for button background
             Image image = buttonGO.AddComponent<Image>();
             image.color = new Color(0.2f, 0.5f, 0.9f, 1f); // Nice blue color
+            image.raycastTarget = true; // REQUIRED: Enables click detection
 
             // Add Button component
             Button button = buttonGO.AddComponent<Button>();
             button.targetGraphic = image;
+            button.interactable = true; // Explicitly enable interaction
 
-            // Create text child for the button
-            TextMeshProUGUI text = CreateTextElement(name + "Text", buttonGO.transform, buttonText, 28,
+            // Configure button color transitions for visual feedback
+            ColorBlock colors = button.colors;
+            colors.normalColor = new Color(0.2f, 0.5f, 0.9f, 1f);
+            colors.highlightedColor = new Color(0.3f, 0.6f, 1f, 1f);
+            colors.pressedColor = new Color(0.15f, 0.4f, 0.8f, 1f);
+            colors.selectedColor = new Color(0.3f, 0.6f, 1f, 1f);
+            colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+            colors.fadeDuration = 0.1f;
+            button.colors = colors;
+
+            // Set navigation mode to none (prevents keyboard navigation issues)
+            button.navigation = new Navigation { mode = Navigation.Mode.None };
+
+            // Create text child for the button - use a container to avoid raycast blocking
+            GameObject textContainer = new GameObject("TextContainer");
+            textContainer.transform.SetParent(buttonGO.transform, false);
+            textContainer.layer = 5; // UI layer
+            
+            RectTransform textContainerRect = textContainer.AddComponent<RectTransform>();
+            textContainerRect.anchorMin = Vector2.zero;
+            textContainerRect.anchorMax = Vector2.one;
+            textContainerRect.offsetMin = Vector2.zero;
+            textContainerRect.offsetMax = Vector2.zero;
+
+            // Create the actual text element inside the container
+            TextMeshProUGUI text = CreateTextElement(name + "Text", textContainer.transform, buttonText, 28,
                 Vector2.zero, Vector2.one, Vector2.zero);
             text.rectTransform.anchorMin = Vector2.zero;
             text.rectTransform.anchorMax = Vector2.one;
             text.rectTransform.offsetMin = Vector2.zero;
             text.rectTransform.offsetMax = Vector2.zero;
+            
+            // IMPORTANT: Disable raycast target on text to prevent blocking button clicks
+            text.raycastTarget = false;
 
             return button;
         }
