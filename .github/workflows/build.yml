@@ -265,7 +265,9 @@ jobs:
     if: always()
     steps:
       - name: Notify Discord/Slack
-        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        if: ${{ env.DISCORD_WEBHOOK_URL != '' }}
         run: |
           ANDROID_STATUS="${{ needs.build-android.result }}"
           IOS_STATUS="${{ needs.build-ios.result }}"
@@ -283,7 +285,7 @@ jobs:
           fi
           
           # Send Discord notification
-          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+          curl -X POST "$DISCORD_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d "{
               \"embeds\": [{
