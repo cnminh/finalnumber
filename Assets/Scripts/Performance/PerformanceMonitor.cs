@@ -27,8 +27,8 @@ namespace FinalNumber.Performance
         [Tooltip("Severe FPS threshold for critical warnings")]
         public float fpsCriticalThreshold = 15f;
 
-        [Tooltip("Memory warning threshold in MB")]
-        public long memoryWarningThresholdMB = 512;
+        [Tooltip("Memory warning threshold in MB (200 iOS / 300 Android target)")]
+        public long memoryWarningThresholdMB = 250; // Conservative default
 
         [Header("Tracking Intervals")]
         [Tooltip("How often to capture performance metrics (seconds)")]
@@ -142,7 +142,14 @@ namespace FinalNumber.Performance
             Application.targetFrameRate = targetFrameRate;
             QualitySettings.vSyncCount = 0; // Let us manage frame rate
 
-            LogInfo("Performance monitor initialized");
+            // Set platform-specific memory thresholds
+            #if UNITY_IOS && !UNITY_EDITOR
+            memoryWarningThresholdMB = 200; // iOS: <200MB target
+            #elif UNITY_ANDROID && !UNITY_EDITOR
+            memoryWarningThresholdMB = 300; // Android: <300MB target
+            #endif
+
+            LogInfo($"Performance monitor initialized (threshold: {memoryWarningThresholdMB}MB)");
         }
 
         #endregion

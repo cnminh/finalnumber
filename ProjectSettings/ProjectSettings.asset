@@ -49,8 +49,8 @@ PlayerSettings:
   m_StereoRenderingPath: 0
   m_ActiveColorSpace: 0
   m_MTRendering: 1
-  mipStripping: 0
-  numberOfMipsStripping: 0
+  mipStripping: 1
+  numberOfMipsStripping: 2
   m_StackTraceTypes: 010000000100000001000000010000000100000001000000
   iosShowActivityIndicatorOnLoading: 0
   androidShowActivityIndicatorOnLoading: 0
@@ -222,9 +222,15 @@ PlayerSettings:
   switchMaxWorkerMultiple: 8
   stadiaPresentMode: 0
   stadiaTargetFramerate: 0
-  scriptingBackend: {}
-  il2cppCompilerConfiguration: {}
-  managedStrippingLevel: {}
+  scriptingBackend:
+    Android: 1
+    iPhone: 1
+  il2cppCompilerConfiguration:
+    Android: 1
+    iPhone: 1
+  managedStrippingLevel:
+    Android: 2
+    iPhone: 2
   incrementalIl2cppBuild: {}
   allowUnsafeCode: 0
   useDeterministicCompilation: 1

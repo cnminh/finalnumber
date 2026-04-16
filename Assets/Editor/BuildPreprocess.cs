@@ -60,6 +60,9 @@ namespace FinalNumber.Editor
                     PlayerSettings.applicationIdentifier = config.GetBundleId();
                     PlayerSettings.iOS.targetOSVersionString = config.iOSTargetVersion;
                     PlayerSettings.iOS.appleDeveloperTeamID = ""; // Set via external config or UI
+                    
+                    // iOS optimization: Use ARM64 only (no 32-bit)
+                    PlayerSettings.iPhoneSdkVersion = iOSSdkVersion.DeviceSDK;
                     break;
 
                 case BuildTarget.Android:
@@ -69,11 +72,14 @@ namespace FinalNumber.Editor
                     PlayerSettings.Android.minSdkVersion = (AndroidSdkVersions)config.androidMinSdk;
                     PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)config.androidTargetSdk;
                     
-                    // Required for Play Store: 64-bit architecture support
-                    PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.ARM64;
+                    // ARM64 only for smaller builds (ARMv7 deprecated on Play Store for new apps)
+                    PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
                     
-                    // Android App Bundle (AAB) - required for Play Store
+                    // Android App Bundle (AAB) - required for Play Store, smaller than APK
                     EditorUserBuildSettings.buildAppBundle = true;
+                    
+                    // Use LZ4HC compression for faster load times
+                    PlayerSettings.Android.useLZ4HC = true;
                     break;
 
                 case BuildTarget.StandaloneOSX:
