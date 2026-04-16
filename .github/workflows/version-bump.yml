@@ -74,7 +74,7 @@ jobs:
 
       - name: Update BuildConfig (if exists)
         run: |
-          BUILD_CONFIG_PATH="FinalNumber/Assets/BuildConfig.asset"
+          BUILD_CONFIG_PATH="Assets/Scripts/BuildConfig.asset"
           
           if [ -f "$BUILD_CONFIG_PATH" ]; then
             echo "Updating BuildConfig.asset..."

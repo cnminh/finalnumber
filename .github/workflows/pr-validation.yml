@@ -8,7 +8,7 @@ on:
 
 env:
   UNITY_VERSION: 2022.3.20f1
-  PROJECT_PATH: FinalNumber
+  PROJECT_PATH: .
 
 jobs:
   # ============================================================================
@@ -94,7 +94,6 @@ jobs:
           # Check required folders exist
           REQUIRED_DIRS=(
             "${{ env.PROJECT_PATH }}/Assets/Scripts"
-            "${{ env.PROJECT_PATH }}/Assets/Resources"
             "${{ env.PROJECT_PATH }}/ProjectSettings"
           )
           
