@@ -791,7 +791,15 @@ namespace FinalNumber.Gameplay
         /// </summary>
         private void LoadBestScore()
         {
-            BestScore = PlayerPrefs.GetInt(BestScoreKey, 0);
+            try
+            {
+                BestScore = PlayerPrefs.GetInt(BestScoreKey, 0);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[GameBoard] Failed to load best score: {e.Message}");
+                BestScore = 0;
+            }
         }
 
         /// <summary>
@@ -799,8 +807,15 @@ namespace FinalNumber.Gameplay
         /// </summary>
         private void SaveBestScore()
         {
-            PlayerPrefs.SetInt(BestScoreKey, BestScore);
-            PlayerPrefs.Save();
+            try
+            {
+                PlayerPrefs.SetInt(BestScoreKey, BestScore);
+                PlayerPrefs.Save();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[GameBoard] Failed to save best score: {e.Message}");
+            }
         }
 
         /// <summary>
@@ -808,9 +823,16 @@ namespace FinalNumber.Gameplay
         /// </summary>
         public void ResetBestScore()
         {
-            BestScore = 0;
-            PlayerPrefs.DeleteKey(BestScoreKey);
-            PlayerPrefs.Save();
+            try
+            {
+                BestScore = 0;
+                PlayerPrefs.DeleteKey(BestScoreKey);
+                PlayerPrefs.Save();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[GameBoard] Failed to reset best score: {e.Message}");
+            }
         }
 
         #endregion
