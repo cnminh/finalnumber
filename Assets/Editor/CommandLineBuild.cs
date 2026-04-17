@@ -42,7 +42,13 @@ namespace FinalNumber.Editor
                 
                 // Set IL2CPP for better performance and 64-bit support
                 PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
+                
+                // Set Android target architectures (ARMv7 and ARM64 for maximum compatibility)
                 PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.ARM64;
+                
+                // Ensure minimum API level supports both architectures
+                PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
+                PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevel35;
 
                 // Build paths
                 string buildDir = Path.Combine(OUTPUT_DIR, "Android");
