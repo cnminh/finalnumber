@@ -216,7 +216,7 @@ namespace FinalNumber.Performance
         {
             long memoryBytes = GC.GetTotalMemory(false);
             currentMemoryMB = memoryBytes / (1024 * 1024);
-            peakMemoryMB = Mathf.Max(peakMemoryMB, currentMemoryMB);
+            peakMemoryMB = Math.Max(peakMemoryMB, currentMemoryMB);
 
             if (currentMemoryMB > memoryWarningThresholdMB)
             {

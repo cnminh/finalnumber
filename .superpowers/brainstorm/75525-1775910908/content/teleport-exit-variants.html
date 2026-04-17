@@ -1,0 +1,79 @@
+<style>
+  .grid5 { display: grid; grid-template-columns: repeat(5, 38px); grid-gap: 3px; background: #1b1f27; padding: 8px; border-radius: 6px; width: max-content; }
+  .grid5 .cell { width: 38px; height: 38px; border-radius: 4px; background: #2a2f3a; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #cfd3da; position: relative; }
+  .cell.tile2   { background: #eee4da; color: #776e65; }
+  .cell.tile4   { background: #ede0c8; color: #776e65; }
+  .cell.portal-a { background: #7b5cff; color: #fff; }
+  .cell.portal-b { background: #ff5cc8; color: #fff; }
+  .cell.portal-b::after { content: attr(data-arrow); position: absolute; bottom: 1px; right: 3px; font-size: 12px; color: #fff; }
+  .frames { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .arrow { font-size: 20px; color: #8a93a0; }
+  .caption { font-size: 11px; color: #8a93a0; margin-top: 6px; text-align: center; }
+  .option h3 { margin-bottom: 4px; }
+  .option .content > p { margin-top: 6px; margin-bottom: 10px; }
+  .warn { background: #3a2030; border-left: 3px solid #ff5566; padding: 10px 12px; border-radius: 4px; margin: 12px 0; font-size: 13px; color: #ffd0d8; }
+  .warn strong { color: #ff8095; }
+</style>
+
+<h2>Teleport exit direction — three deterministic options</h2>
+<p class="subtitle">You asked about random — here's why it doesn't work, and three options that keep the puzzle solvable.</p>
+
+<div class="warn">
+  <strong>Why not random?</strong> 2048-style levels are puzzles — they need <em>one</em> optimal solution the solver can find, so we can score stars, set par moves, and prove the level is fair. A random exit makes the same swipe lead to four different boards, so there is no "optimal". The player can't plan, the solver can't solve, and difficulty tuning falls apart.
+</div>
+
+<div class="options">
+
+  <div class="option" data-choice="b1" onclick="toggleSelect(this)">
+    <div class="letter">B1</div>
+    <div class="content">
+      <h3>Portal B has a fixed exit direction <em>(my recommendation)</em></h3>
+      <p>Each portal-B cell has an arrow the level designer sets (↑/↓/←/→). When a tile lands on portal A, it jumps to B and then slides in the direction the arrow points, until it hits something. Designer-controlled, deterministic, and visually clear.</p>
+      <div class="frames">
+        <div>
+          <div class="grid5">
+            <div class="cell"></div><div class="cell tile2">2</div><div class="cell"></div><div class="cell portal-a">A</div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell portal-b" data-arrow="↓">B</div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell tile2">2</div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          </div>
+          <div class="caption">B has ↓ arrow — swipe right</div>
+        </div>
+        <div class="arrow">→</div>
+        <div>
+          <div class="grid5">
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell portal-a">A</div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell portal-b" data-arrow="↓">B</div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell tile4">4</div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          </div>
+          <div class="caption">"2" lands on A, pops out at B, slides ↓, merges with bottom "2"</div>
+        </div>
+      </div>
+      <p><strong>Solver cost:</strong> small. Adds a deterministic post-slide resolution step per portal. <strong>Feels like:</strong> each portal is a little launcher the designer aims.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b2" onclick="toggleSelect(this)">
+    <div class="letter">B2</div>
+    <div class="content">
+      <h3>Tile continues in the original swipe direction</h3>
+      <p>If you swiped <em>right</em> and a tile lands on portal A, it pops out at B and <strong>keeps sliding right</strong> from there. The direction just inherits your swipe. Simple, no portal-metadata needed.</p>
+      <p><strong>Solver cost:</strong> small. <strong>Feels like:</strong> predictable — portals are pure "shortcuts" in the same direction. Fewer design levers.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b3" onclick="toggleSelect(this)">
+    <div class="letter">B3</div>
+    <div class="content">
+      <h3>Player chooses the exit direction</h3>
+      <p>When a tile hits portal A, the game pauses and asks the player "which way does it go?" (↑/↓/←/→). Adds agency, but interrupts the tactile swipe feel.</p>
+      <p><strong>Solver cost:</strong> the BFS branches by 4× at every teleport — still tractable but slower to generate levels. <strong>Feels like:</strong> a strategy pause every time you teleport.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top: 16px;">If you like the "it keeps moving" vibe, <strong>B1</strong> gives the richest design space — a portal with a ↑ aims tiles up, a portal with ← shoots them left, and you can build puzzles around those launchers.</p>

@@ -26,7 +26,7 @@ namespace FinalNumber.Editor
 
             // Get build summary
             BuildSummary summary = report.summary;
-            long totalSize = summary.totalSize;
+            long totalSize = (long)summary.totalSize;
             BuildTarget platform = summary.platform;
             string outputPath = summary.outputPath;
 
@@ -93,9 +93,9 @@ namespace FinalNumber.Editor
                 writer.WriteLine();
                 writer.WriteLine("ASSET BREAKDOWN:");
 
-                foreach (var group in report.GetFiles().GroupBy(f => f.role).OrderByDescending(g => g.Sum(f => f.size)))
+                foreach (var group in report.GetFiles().GroupBy(f => f.role).OrderByDescending(g => g.Sum(f => (long)f.size)))
                 {
-                    long groupSize = group.Sum(f => f.size);
+                    long groupSize = group.Sum(f => (long)f.size);
                     writer.WriteLine($"  {group.Key}: {FormatBytes(groupSize)} ({group.Count()} files)");
                 }
 
@@ -145,16 +145,16 @@ namespace FinalNumber.Editor
             long assetsSize = GetAssetsFolderSize();
             long librariesEstimate = 50 * 1024 * 1024; // ~50MB for Unity runtime
 
-            long estimatedBuild = assetsSize + librariesSizeEstimate;
+            long estimatedBuild = assetsSize + librariesEstimate;
 
             Debug.Log($"[BuildSizeAnalyzer] Estimated Build Size:\n" +
                 $"  Assets: {FormatBytesStatic(assetsSize)}\n" +
-                $"  Engine: {FormatBytesStatic(librariesSizeEstimate)}\n" +
+                $"  Engine: {FormatBytesStatic(librariesEstimate)}\n" +
                 $"  Total Est: {FormatBytesStatic(estimatedBuild)}");
 
             EditorUtility.DisplayDialog("Build Size Estimate",
                 $"Assets: {FormatBytesStatic(assetsSize)}\n" +
-                $"Engine: {FormatBytesStatic(librariesSizeEstimate)}\n" +
+                $"Engine: {FormatBytesStatic(librariesEstimate)}\n" +
                 $"Total: {FormatBytesStatic(estimatedBuild)}\n\n" +
                 $"Target: <100MB download",
                 estimatedBuild < TARGET_APP_SIZE ? "On Track" : "Needs Optimization");

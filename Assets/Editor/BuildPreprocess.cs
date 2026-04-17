@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using FinalNumber.Build;
 
 namespace FinalNumber.Editor
 {
@@ -61,8 +62,6 @@ namespace FinalNumber.Editor
                     PlayerSettings.iOS.targetOSVersionString = config.iOSTargetVersion;
                     PlayerSettings.iOS.appleDeveloperTeamID = ""; // Set via external config or UI
                     
-                    // iOS optimization: Use ARM64 only (no 32-bit)
-                    PlayerSettings.iPhoneSdkVersion = iOSSdkVersion.DeviceSDK;
                     break;
 
                 case BuildTarget.Android:
@@ -78,8 +77,6 @@ namespace FinalNumber.Editor
                     // Android App Bundle (AAB) - required for Play Store, smaller than APK
                     EditorUserBuildSettings.buildAppBundle = true;
                     
-                    // Use LZ4HC compression for faster load times
-                    PlayerSettings.Android.useLZ4HC = true;
                     break;
 
                 case BuildTarget.StandaloneOSX:

@@ -1,0 +1,149 @@
+<style>
+  .grid5 { display: grid; grid-template-columns: repeat(5, 44px); grid-gap: 3px; background: #1b1f27; padding: 8px; border-radius: 6px; width: max-content; }
+  .grid5 .cell { width: 44px; height: 44px; border-radius: 4px; background: #2a2f3a; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #cfd3da; }
+  .cell.tile2   { background: #eee4da; color: #776e65; }
+  .cell.tile4   { background: #ede0c8; color: #776e65; }
+  .cell.tile8   { background: #f2b179; color: #f9f6f2; }
+  .cell.wall    { background: #1a1d23; color: #333; }
+  .cell.portal-a { background: #7b5cff; color: #fff; }
+  .cell.portal-b { background: #ff5cc8; color: #fff; }
+  .cell.wrap    { background: #2dd4bf; color: #073b35; }
+  .frames { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .arrow { font-size: 22px; color: #8a93a0; }
+  .caption { font-size: 11px; color: #8a93a0; margin-top: 6px; text-align: center; }
+  .option h3 { margin-bottom: 4px; }
+  .option .content > p { margin-top: 6px; margin-bottom: 10px; }
+  .legend { font-size: 11px; color: #8a93a0; display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+</style>
+
+<h2>How should "teleport" work?</h2>
+<p class="subtitle">Pick the semantic that feels right — everything downstream (solver, generator, 25 level files) depends on this choice. Each example shows a swipe <strong>right</strong> on a 5×5 board.</p>
+
+<div class="legend">
+  <span><span class="swatch" style="background:#7b5cff"></span>Portal A</span>
+  <span><span class="swatch" style="background:#ff5cc8"></span>Portal B</span>
+  <span><span class="swatch" style="background:#2dd4bf"></span>Wrap edge</span>
+  <span><span class="swatch" style="background:#1a1d23"></span>Wall</span>
+</div>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Post-swipe pair portals <em>(recommended)</em></h3>
+      <p>Portals come in linked pairs (A↔B) placed on cells. The swipe resolves normally. <strong>After</strong> tiles settle, any tile sitting on portal A jumps to portal B (and vice-versa), but only if the destination cell is empty. No mid-slide magic.</p>
+      <div class="frames">
+        <div>
+          <div class="grid5">
+            <div class="cell"></div><div class="cell tile2">2</div><div class="cell"></div><div class="cell portal-a">A</div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell portal-b">B</div><div class="cell"></div><div class="cell tile2">2</div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          </div>
+          <div class="caption">start — swipe right</div>
+        </div>
+        <div class="arrow">→</div>
+        <div>
+          <div class="grid5">
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell portal-a">A</div><div class="cell tile2">2</div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell portal-b">B</div><div class="cell"></div><div class="cell tile2">2</div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          </div>
+          <div class="caption">after slide</div>
+        </div>
+        <div class="arrow">⟶</div>
+        <div>
+          <div class="grid5">
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell portal-a">A</div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell portal-b">B</div><div class="cell"></div><div class="cell tile4">4</div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          </div>
+          <div class="caption">top tile landed ON A → teleports to B's row, merges with 2</div>
+        </div>
+      </div>
+      <p><strong>Solver cost:</strong> cheap (one extra step per swipe). <strong>Feels like:</strong> a planning puzzle — you set up collisions across the board.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Mid-slide pair portals</h3>
+      <p>Portals are traversed <strong>during</strong> the slide: a tile entering portal A is instantly relocated to portal B and keeps sliding in the same direction from there. Multiple tiles can pass through in one swipe.</p>
+      <div class="frames">
+        <div>
+          <div class="grid5">
+            <div class="cell tile2">2</div><div class="cell"></div><div class="cell portal-a">A</div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell portal-b">B</div><div class="cell"></div><div class="cell"></div><div class="cell tile2">2</div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          </div>
+          <div class="caption">start — swipe right</div>
+        </div>
+        <div class="arrow">→</div>
+        <div>
+          <div class="grid5">
+            <div class="cell"></div><div class="cell"></div><div class="cell portal-a">A</div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell portal-b">B</div><div class="cell"></div><div class="cell"></div><div class="cell tile4">4</div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          </div>
+          <div class="caption">row-0 "2" enters A, exits B in row 2, slides right, merges</div>
+        </div>
+      </div>
+      <p><strong>Solver cost:</strong> significant — slide physics now jump between rows/cols. Multi-portal chains need care. <strong>Feels like:</strong> exciting, action-y, but unpredictable for designers.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Edge wrap (Pac-Man)</h3>
+      <p>No portals at all — selected rows or columns <strong>wrap around</strong>. A tile sliding off the right edge of a wrap row reappears on the left edge of the same row and keeps sliding.</p>
+      <div class="frames">
+        <div>
+          <div class="grid5">
+            <div class="cell wrap"></div><div class="cell wrap"></div><div class="cell wrap"></div><div class="cell wrap"></div><div class="cell wrap"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell tile2">2</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell tile2">2</div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          </div>
+          <div class="caption">row 0 is a wrap row — swipe right</div>
+        </div>
+        <div class="arrow">→</div>
+        <div>
+          <div class="grid5">
+            <div class="cell wrap"></div><div class="cell wrap"></div><div class="cell wrap"></div><div class="cell wrap"></div><div class="cell wrap"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell tile4">4</div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+          </div>
+          <div class="caption">(example below — not row 0) the two 2s become adjacent via wrap and merge</div>
+        </div>
+      </div>
+      <p><strong>Solver cost:</strong> tiny — just a line modifier. <strong>Feels like:</strong> clean and puzzly, but less visually striking than portals.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="d" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>Swap portals</h3>
+      <p>Paired cells A/B. When a tile lands on A (after slide), whatever is at B swaps places with it — even if B holds a tile. Effectively "send this tile where the other tile was."</p>
+      <p><strong>Solver cost:</strong> moderate. <strong>Feels like:</strong> a transposition trick — interesting but conceptually harder to teach.</p>
+    </div>
+  </div>
+
+</div>

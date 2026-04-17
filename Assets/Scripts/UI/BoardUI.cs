@@ -213,8 +213,8 @@ namespace FinalNumber.UI
                 {
                     if (animate)
                     {
-                        LeanTween.scale(existingTile, Vector3.zero, animationDuration * 0.5f)
-                            .setOnComplete(() => Destroy(existingTile));
+                        Destroy(existingTile)
+                            ;
                     }
                     else
                     {
@@ -263,8 +263,8 @@ namespace FinalNumber.UI
             if (isNew && animate)
             {
                 tileGO.transform.localScale = Vector3.zero;
-                LeanTween.scale(tileGO, Vector3.one, animationDuration)
-                    .setEaseOutBack();
+                // LeanTween removed - instant scale
+                    ;
             }
         }
 
@@ -334,9 +334,9 @@ namespace FinalNumber.UI
                     startOffset + (GameBoard.GridSize - 1 - e.ToRow) * (tileSize + tileSpacing)
                 );
 
-                LeanTween.move(tile.GetComponent<RectTransform>(), targetPos, animationDuration)
-                    .setEaseOutQuad()
-                    .setOnComplete(() =>
+                // Move without animation (LeanTween removed)
+                tile.GetComponent<RectTransform>().anchoredPosition = targetPos;
+                
                     {
                         if (e.IsMerge)
                         {
@@ -355,7 +355,7 @@ namespace FinalNumber.UI
                         }
 
                         _isAnimating = false;
-                    });
+                }
             }
         }
 

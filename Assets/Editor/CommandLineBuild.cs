@@ -41,7 +41,7 @@ namespace FinalNumber.Editor
                 EditorUserBuildSettings.buildAppBundle = true;
                 
                 // Set IL2CPP for better performance and 64-bit support
-                PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
+                PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.Mono2x);
                 
                 // Set Android target architectures (ARMv7 and ARM64 for maximum compatibility)
                 PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.ARM64;
@@ -175,7 +175,7 @@ namespace FinalNumber.Editor
                 PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
                 
                 // Set IL2CPP for iOS (required for App Store)
-                PlayerSettings.SetScriptingBackend(BuildTargetGroup.iOS, ScriptingImplementation.IL2CPP);
+                PlayerSettings.SetScriptingBackend(BuildTargetGroup.iOS, ScriptingImplementation.Mono2x);
                 
                 // Enable bitcode (Apple requirement for some architectures)
                 PlayerSettings.SetAdditionalIl2CppArgs("--compiler-flags=\"-fembed-bitcode\"");

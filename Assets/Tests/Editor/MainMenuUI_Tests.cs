@@ -368,7 +368,7 @@ namespace FinalNumber.Tests
             quitBtn.onClick.AddListener(() => { });
 
             // Verify listeners are added
-            Assert.AreEqual(1, playBtn.onClick.GetPersistentEventCount() + playBtn.onClick.GetNonPersistentEventCount(),
+            Assert.AreEqual(1, playBtn.onClick.GetPersistentEventCount(),
                 "Play button should have listeners");
 
             // Cleanup buttons

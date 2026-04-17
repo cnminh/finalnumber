@@ -317,9 +317,9 @@ namespace FinalNumber
         /// <summary>
         /// Get current game state for saving
         /// </summary>
-        public GameState GetCurrentGameState()
+        public SerializableGameState GetCurrentGameState()
         {
-            return new GameState
+            return new SerializableGameState
             {
                 GridState = GridManager.GetGridState(),
                 Score = ScoreManager.CurrentScore,
@@ -333,7 +333,7 @@ namespace FinalNumber
         /// <summary>
         /// Restore game from saved state
         /// </summary>
-        public void RestoreGameState(GameState state)
+        public void RestoreGameState(SerializableGameState state)
         {
             // TODO: Implement game state restoration
             Debug.Log("[GameController] Restore game state - Not yet implemented");
@@ -344,7 +344,7 @@ namespace FinalNumber
     /// Serializable game state for saving/loading
     /// </summary>
     [Serializable]
-    public class GameState
+    public class SerializableGameState
     {
         public int[,] GridState;
         public int Score;

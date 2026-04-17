@@ -25,20 +25,6 @@ namespace FinalNumber.Tests.EditMode
             _lastLevelId = 0;
             _lastWorldId = 0;
             _lastScore = 0;
-
-            // Clear all subscriptions before each test
-            GameEventBus.OnLevelStarted = null;
-            GameEventBus.OnLevelCompleted = null;
-            GameEventBus.OnLevelFailed = null;
-            GameEventBus.OnWorldUnlocked = null;
-            GameEventBus.OnPowerUpUsed = null;
-            GameEventBus.OnAchievementUnlocked = null;
-            GameEventBus.OnGameStarted = null;
-            GameEventBus.OnGamePaused = null;
-            GameEventBus.OnGameResumed = null;
-            GameEventBus.OnGameQuit = null;
-            GameEventBus.OnScreenOpened = null;
-            GameEventBus.OnScreenClosed = null;
         }
 
         #region Level Event Tests
