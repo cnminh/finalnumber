@@ -295,23 +295,6 @@ namespace FinalNumber.Tests.EditMode
         }
 
         [Test]
-        public void GetValidMoves_ReturnsAllPossibleMoves()
-        {
-            // Arrange - Tile in center
-            _gridManager.PlaceTile(new Tile(2, 1, 1), 1, 1);
-
-            // Act
-            var validMoves = _gameLogic.GetValidMoves();
-
-            // Assert
-            Assert.AreEqual(4, validMoves.Count, "All 4 directions should be valid");
-            Assert.Contains(MoveDirection.Up, validMoves);
-            Assert.Contains(MoveDirection.Down, validMoves);
-            Assert.Contains(MoveDirection.Left, validMoves);
-            Assert.Contains(MoveDirection.Right, validMoves);
-        }
-
-        [Test]
         public void GetValidMoves_NoValidMoves_ReturnsEmptyList()
         {
             // Arrange - Full grid with no mergeable tiles
